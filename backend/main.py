@@ -27,9 +27,15 @@ app = FastAPI(
 )
 
 # CORS middleware for frontend
+allowed_origins = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "https://primary-source-trainer.vercel.app",
+    os.getenv("FRONTEND_URL", "")
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure for production
+    allow_origins=[origin for origin in allowed_origins if origin],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -226,4 +232,5 @@ def get_stats():
 # Development server startup
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
