@@ -23,8 +23,5 @@
       "dest": "frontend/$1"
     }
   ],
-  "env": {
-    "SENDGRID_API_KEY": "@sendgrid_api_key",
-    "INSTRUCTOR_EMAIL": "foxyaniv@gmail.com"
-  }
+  "outputDirectory": "frontend/dist"
 }
