@@ -1,11 +1,12 @@
 import sys
 import os
 
-# Add backend directory to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'backend'))
+# Add backend directory to Python path
+backend_path = os.path.join(os.path.dirname(__file__), '..', 'backend')
+sys.path.insert(0, backend_path)
 
+# Import the FastAPI app
 from main import app
 
-# Vercel serverless function handler
-def handler(request, context):
-    return app(request, context)
+# Export for Vercel
+handler = app
