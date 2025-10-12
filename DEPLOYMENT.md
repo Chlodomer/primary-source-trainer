@@ -1,5 +1,15 @@
 # Deployment Guide
 
+This guide covers multiple deployment options for your Primary Source Trainer app.
+
+## Deployment Options
+
+1. **[Vercel](#deploying-to-vercel)** - Recommended for frontend; serverless functions for backend
+2. **[PythonAnywhere](#deploying-to-pythonanywhere)** - Traditional Python hosting; free tier available
+3. **Render** - Alternative Python hosting (see Render-specific docs)
+
+---
+
 ## Deploying to Vercel
 
 ### Prerequisites
@@ -140,3 +150,34 @@ git push
 ```
 
 Vercel will automatically redeploy both frontend and backend!
+
+---
+
+## Deploying to PythonAnywhere
+
+For detailed PythonAnywhere deployment instructions, see **[PYTHONANYWHERE_DEPLOYMENT.md](PYTHONANYWHERE_DEPLOYMENT.md)**.
+
+### Quick Overview
+
+PythonAnywhere is a Python-specific hosting platform with a generous free tier, perfect for educational projects.
+
+**Pros:**
+- Free tier includes HTTPS
+- Easy Python app hosting
+- No credit card required
+- Good for classroom use
+
+**Cons:**
+- Free tier has CPU limits
+- Web app sleeps after 3 months of inactivity
+- WSGI only (requires adapter for FastAPI)
+
+**Quick Steps:**
+1. Sign up at [pythonanywhere.com](https://www.pythonanywhere.com)
+2. Clone your repo or upload files
+3. Set up virtual environment
+4. Configure WSGI file with a2wsgi adapter
+5. Set environment variables
+6. Your API will be at `https://YOUR_USERNAME.pythonanywhere.com`
+
+See **[PYTHONANYWHERE_DEPLOYMENT.md](PYTHONANYWHERE_DEPLOYMENT.md)** for complete step-by-step instructions!
