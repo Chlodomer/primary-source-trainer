@@ -176,7 +176,7 @@ def submit_session(submission: SessionSubmission):
         - student_email: (optional) Student's email
         - scenario_results: List of ScenarioResult objects
     """
-    instructor_email = os.getenv("INSTRUCTOR_EMAIL", "foxyaniv@gmail.com")
+    instructor_email = os.getenv("INSTRUCTOR_EMAIL", "yaniv.fox@biu.ac.il")
 
     print(f"[EMAIL] Attempting to send email to: {instructor_email}")
     print(f"[EMAIL] Student: {submission.student_name}")
@@ -203,7 +203,7 @@ def generate_text_report(submission: SessionSubmission):
 
     return {
         "report": report,
-        "instructor_email": os.getenv("INSTRUCTOR_EMAIL", "foxyaniv@gmail.com")
+        "instructor_email": os.getenv("INSTRUCTOR_EMAIL", "yaniv.fox@biu.ac.il")
     }
 
 

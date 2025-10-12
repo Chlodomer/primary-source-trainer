@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 
 # Add your project directory to the sys.path
-project_home = '/home/YOUR_USERNAME/primary-source-trainer/backend'
+project_home = '/home/Chilperic/primary-source-trainer/backend'
 if project_home not in sys.path:
     sys.path.insert(0, project_home)
 
