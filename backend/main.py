@@ -26,15 +26,28 @@ app = FastAPI(
 )
 
 # CORS middleware for frontend
+# Allow localhost for development and Vercel domains for production
 allowed_origins = [
     "http://localhost:3000",
     "http://localhost:5173",
     "https://primary-source-trainer.vercel.app",
     os.getenv("FRONTEND_URL", "")
 ]
+
+# Also check if origin matches Vercel pattern (*.vercel.app)
+def is_allowed_origin(origin: str) -> bool:
+    if not origin:
+        return False
+    if origin in allowed_origins:
+        return True
+    # Allow any *.vercel.app domain
+    if origin.endswith(".vercel.app") and origin.startswith("https://"):
+        return True
+    return False
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[origin for origin in allowed_origins if origin],
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
