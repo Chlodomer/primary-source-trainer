@@ -11,11 +11,10 @@ from dotenv import load_dotenv
 
 from models import (
     Scenario, Submission, ScenarioResult, GradingResult,
-    SessionSubmission, EmailResponse, Topic
+    SessionSubmission, Topic
 )
 from scenarios import generate_scenarios
 from grading import classify_sources, grade_submission, get_node_feedback
-from email_service import send_results_email, format_plain_text_report
 
 # Load environment variables
 load_dotenv()
@@ -166,31 +165,69 @@ def get_detailed_feedback(scenario_id: str, node_id: str, topic_id: str):
     }
 
 
-@app.post("/api/submit-session", response_model=EmailResponse)
+@app.post("/api/submit-session")
 def submit_session(submission: SessionSubmission):
     """
-    Submit complete session results and email to instructor.
+    Submit complete session results and generate downloadable report.
 
     Request body:
         - student_name: Student's name
         - student_email: (optional) Student's email
         - scenario_results: List of ScenarioResult objects
     """
-    instructor_email = os.getenv("INSTRUCTOR_EMAIL", "yaniv.fox@biu.ac.il")
+    import hashlib
+    import json
+    from datetime import datetime
 
-    print(f"[EMAIL] Attempting to send email to: {instructor_email}")
-    print(f"[EMAIL] Student: {submission.student_name}")
-    print(f"[EMAIL] Number of scenarios: {len(submission.scenario_results)}")
+    # Calculate total score
+    total_score = sum(r.score for r in submission.scenario_results)
+    max_score = sum(r.max_score for r in submission.scenario_results)
+    percentage = round((total_score / max_score * 100) if max_score > 0 else 0, 1)
 
-    # Send email
-    result = send_results_email(submission, instructor_email)
+    # Create verification code (hash of student name + timestamp + secret)
+    timestamp = datetime.now().isoformat()
+    secret = "primary-source-trainer-2025"  # Secret key for verification
+    verification_string = f"{submission.student_name}{timestamp}{secret}"
+    verification_code = hashlib.sha256(verification_string.encode()).hexdigest()[:12]
 
-    print(f"[EMAIL] Result - Success: {result['success']}, Message: {result['message']}")
+    # Build report data
+    report_data = {
+        "student_name": submission.student_name,
+        "student_email": submission.student_email,
+        "submission_timestamp": timestamp,
+        "verification_code": verification_code.upper(),
+        "instructor_email": "yaniv.fox@biu.ac.il",
+        "total_score": total_score,
+        "max_score": max_score,
+        "percentage": percentage,
+        "scenarios_completed": len(submission.scenario_results),
+        "scenario_results": [
+            {
+                "scenario_id": r.scenario_id,
+                "score": r.score,
+                "max_score": r.max_score,
+                "topic": r.topic_label,
+                "results": [
+                    {
+                        "node_id": res.node_id,
+                        "correct": res.correct,
+                        "student_classification": res.student_classification,
+                        "correct_classification": res.correct_classification,
+                        "feedback": res.feedback
+                    }
+                    for res in r.results
+                ]
+            }
+            for r in submission.scenario_results
+        ]
+    }
 
-    return EmailResponse(
-        success=result["success"],
-        message=result["message"]
-    )
+    return {
+        "success": True,
+        "message": "Results ready for download",
+        "report_data": report_data,
+        "filename": f"primary-source-results-{verification_code.upper()}.json"
+    }
 
 
 @app.post("/api/generate-report")
