@@ -56,12 +56,13 @@ function App() {
       const response = await axios.post(`${API_URL}/api/submit-session`, submission);
 
       if (!response.data.success) {
-        throw new Error(response.data.message);
+        throw new Error(response.data.message || 'Failed to generate results');
       }
 
       return response.data;
     } catch (err) {
-      throw new Error(err.response?.data?.message || 'Failed to send email');
+      console.error('Submit error:', err);
+      throw new Error(err.response?.data?.message || err.message || 'Failed to generate results');
     }
   };
 

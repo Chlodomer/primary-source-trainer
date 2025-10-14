@@ -29,10 +29,26 @@ const FinalSummary = ({ sessionResults, onEmailSubmit, initialStudentName = '' }
     setError('');
 
     try {
-      await onEmailSubmit(studentName, studentEmail);
+      const reportData = await onEmailSubmit(studentName, studentEmail);
+
+      // Download the results as JSON file
+      if (reportData && reportData.report_data) {
+        const blob = new Blob([JSON.stringify(reportData.report_data, null, 2)], {
+          type: 'application/json'
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = reportData.filename || `primary-source-results-${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
       setEmailSent(true);
     } catch (err) {
-      setError(err.message || 'Failed to send email. Please try again.');
+      setError(err.message || 'Failed to generate results. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -84,9 +100,9 @@ const FinalSummary = ({ sessionResults, onEmailSubmit, initialStudentName = '' }
 
       {!emailSent ? (
         <div className="email-form">
-          <h3 style={{ marginBottom: '15px' }}>Send Results to Instructor</h3>
+          <h3 style={{ marginBottom: '15px' }}>Download Your Results</h3>
           <p style={{ marginBottom: '15px', fontSize: '0.9rem', color: '#8D99AE' }}>
-            Your results will be emailed to your instructor
+            Download your results file and email it to: <strong>yaniv.fox@biu.ac.il</strong>
           </p>
 
           {initialStudentName ? (
@@ -127,7 +143,7 @@ const FinalSummary = ({ sessionResults, onEmailSubmit, initialStudentName = '' }
             disabled={isSubmitting}
             style={{ marginTop: '15px', width: '100%' }}
           >
-            {isSubmitting ? 'Sending...' : 'Finish & Send to Instructor'}
+            {isSubmitting ? 'Generating...' : 'Download Results'}
           </button>
         </div>
       ) : (
@@ -138,9 +154,9 @@ const FinalSummary = ({ sessionResults, onEmailSubmit, initialStudentName = '' }
           borderRadius: '6px',
           fontSize: '1.1rem'
         }}>
-          <strong>✓ Results Sent!</strong>
+          <strong>✓ Results Downloaded!</strong>
           <p style={{ marginTop: '10px', fontSize: '0.95rem' }}>
-            Your results have been emailed to your instructor.
+            Your results file has been downloaded. Please email it to: <strong>yaniv.fox@biu.ac.il</strong>
             {percentage >= 80 ? ' Excellent work!' : percentage >= 70 ? ' Good job!' : percentage >= 50 ? ' Keep practicing!' : ''}
           </p>
         </div>
