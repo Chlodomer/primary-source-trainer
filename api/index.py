@@ -1,14 +1,15 @@
-from fastapi import FastAPI
-from mangum import Mangum
 import sys
 import os
+from pathlib import Path
 
 # Add backend to path
-backend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'backend')
-sys.path.insert(0, backend_path)
+backend_path = str(Path(__file__).parent.parent / 'backend')
+if backend_path not in sys.path:
+    sys.path.insert(0, backend_path)
 
 # Import the app
 from main import app
+from mangum import Mangum
 
-# Mangum handler for AWS Lambda/Vercel
-handler = Mangum(app)
+# Mangum handler for Vercel serverless
+handler = Mangum(app, lifespan="off")
