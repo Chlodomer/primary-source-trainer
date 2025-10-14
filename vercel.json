@@ -24,7 +24,6 @@
     }
   ],
   "env": {
-    "SENDGRID_API_KEY": "@sendgrid_api_key",
     "INSTRUCTOR_EMAIL": "yaniv.fox@biu.ac.il"
   }
 }
