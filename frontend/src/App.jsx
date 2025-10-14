@@ -4,7 +4,7 @@ import ScenarioView from './components/ScenarioView';
 import FinalSummary from './components/FinalSummary';
 import './styles/App.css';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
+const API_URL = import.meta.env.VITE_API_URL || 'https://primary-source-trainer.onrender.com';
 
 function App() {
   const [scenarios, setScenarios] = useState([]);
@@ -16,17 +16,24 @@ function App() {
   const [nameSubmitted, setNameSubmitted] = useState(false);
 
   useEffect(() => {
+    // Debug: Log the API URL being used
+    console.log('API_URL:', API_URL);
+    console.log('VITE_API_URL env:', import.meta.env.VITE_API_URL);
     loadScenarios();
   }, []);
 
   const loadScenarios = async () => {
     try {
+      console.log('Fetching from:', `${API_URL}/api/scenarios`);
       const response = await axios.get(`${API_URL}/api/scenarios`);
+      console.log('Scenarios loaded successfully:', response.data.length);
       // Only use first 5 scenarios
       setScenarios(response.data.slice(0, 5));
       setLoading(false);
     } catch (err) {
-      setError('Failed to load scenarios. Please check if the backend is running.');
+      console.error('Failed to load scenarios:', err);
+      console.error('Error details:', err.response || err.message);
+      setError(`Failed to load scenarios. Error: ${err.message}. API URL: ${API_URL}`);
       setLoading(false);
     }
   };
