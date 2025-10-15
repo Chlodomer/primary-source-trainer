@@ -209,9 +209,9 @@ def submit_session(submission: SessionSubmission):
                 "results": [
                     {
                         "node_id": res.node_id,
-                        "correct": res.correct,
-                        "student_classification": res.student_classification,
-                        "correct_classification": res.correct_classification,
+                        "correct": res.is_correct,
+                        "student_classification": res.student_answer,
+                        "correct_classification": res.correct_answer,
                         "feedback": res.feedback
                     }
                     for res in r.results
